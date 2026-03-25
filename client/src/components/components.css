@@ -1,0 +1,28 @@
+nav {
+    background: var(--bg-90);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+
+    .navItem {
+        color: var(--text-thin);
+        transition:
+            color 0.2s,
+            background-color 0.2s;
+        border-radius: var(--radius-md);
+        padding: 0.25rem 0.75rem;
+
+        &:hover {
+            color: var(--text);
+            background-color: var(--gray-thin);
+        }
+    }
+}
+
+.primary-button {
+    all: unset;
+    color: var(--bg);
+    background-color: var(--text);
+    padding: 0.5rem 1.25rem;
+    border-radius: var(--radius-md);
+    cursor: pointer !important;
+}
