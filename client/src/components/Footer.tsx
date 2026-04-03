@@ -1,3 +1,4 @@
+import Button from "./Button";
 import Logo from "./icons/Logo";
 import { Link } from "react-router-dom";
 
@@ -47,9 +48,7 @@ export default function Footer() {
                     <p className="pLink">Request a Feature</p>
                 </Link>
                 <Link to="/contact">
-                    <button className="bg-(--text) text-(--bg) rounded-md px-4 py-2 text-lg mt-4 mr-auto">
-                        Contact
-                    </button>
+                    <Button>Contact</Button>
                 </Link>
             </div>
         </footer>

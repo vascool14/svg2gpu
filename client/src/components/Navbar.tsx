@@ -22,11 +22,7 @@ export default function Navbar() {
                 Playground
             </Link>
             
-            use&nbsp;<Link to="https://github.com/memononen/nanosvg" target="_blank" rel="noopener noreferrer">https://github.com/memononen/nanosvg</Link>&nbsp;for best results
-
-            <Link to="/examples" className="navItem">
-                Examples
-            </Link>
+            {/* use&nbsp;<Link to="https://github.com/memononen/nanosvg" target="_blank" rel="noopener noreferrer">https://github.com/memononen/nanosvg</Link>&nbsp;for best results */}
             <Link to="/docs" className="navItem">
                 Docs
             </Link>

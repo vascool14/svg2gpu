@@ -34,7 +34,6 @@ const customHeader = `
    </a>
 
    <a class="navItem" href="/playground">Playground</a>
-   <a class="navItem mobileHidden" href="/examples">Examples</a>
    <a class="navItem" href="/docs">Docs</a>
    <a class="navItem mobileHidden" href="/typedoc">Typedoc</a>
 

@@ -3,7 +3,6 @@ import { lazy } from "react";
 import Home from "./pages/home/Home";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import Examples from "./pages/examples/Examples";
 import Docs from "./pages/docs/Docs";
 
 const Playground = lazy(() => import("./pages/playground/Playground"));
@@ -26,7 +25,6 @@ function AppShell() {
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/playground" element={<Playground />} />
-                <Route path="/examples" element={<Examples />} />
                 <Route path="/docs" element={<Docs />} />
                 <Route path="*" element={<NotFound />} />
             </Routes>

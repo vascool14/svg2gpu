@@ -239,14 +239,7 @@ export default function HeroSection() {
                 </p>
                 <div className="flex gap-8 mt-10 items-center justify-center">
                     <Link to="/playground" style={{ textDecoration: "none" }}>
-                        <Button
-                            style={{
-                                background: "var(--primary)",
-                                color: "#FFFFFF",
-                            }}
-                        >
-                            <span>Try it out</span>
-                        </Button>
+                        <Button>Try it out</Button>
                     </Link>
                     <Link to="/docs" style={{ textDecoration: "none" }}>
                         <Button
