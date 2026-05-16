@@ -1,6 +1,8 @@
 import { ESVGElementType, EPathDType } from "../types/index";
 import {
 	Point,
+	ParsedSVGDocument,
+	SVGDocumentMetadata,
 	SVGElmnt,
 	SVGStyleProps,
 	SVGStrokeOnlyStyleProps,
@@ -61,8 +63,22 @@ export class SVGParser {
 	}
 
 	private static parseCommonStyles(el: Element): SVGStyleProps {
-		console.log(el.getAttribute("stroke"), ColorParser.parse(el.getAttribute("stroke")));
-		
+		const specifiedStyle: SVGStyleProps["specifiedStyle"] = {
+			fill: el.hasAttribute("fill"),
+			fillOpacity: el.hasAttribute("fill-opacity"),
+			stroke: el.hasAttribute("stroke"),
+			strokeWidth: el.hasAttribute("stroke-width"),
+			strokeOpacity: el.hasAttribute("stroke-opacity"),
+			strokeLinecap: el.hasAttribute("stroke-linecap"),
+			strokeLinejoin: el.hasAttribute("stroke-linejoin"),
+			strokeDasharray: el.hasAttribute("stroke-dasharray"),
+			strokeDashoffset: el.hasAttribute("stroke-dashoffset"),
+			opacity: el.hasAttribute("opacity"),
+			transform: el.hasAttribute("transform"),
+			visibility: el.hasAttribute("visibility"),
+			display: el.hasAttribute("display"),
+		};
+
 		return {
 			fill: ColorParser.parse(el.getAttribute("fill")) ?? Defaults.FILL,
 			fillOpacity: this.parseFloatAttr(el, "fill-opacity") ?? Defaults.FILL_OPACITY,
@@ -90,6 +106,48 @@ export class SVGParser {
 			display:
 				(el.getAttribute("display") as SVGStyleProps["display"]) ??
 				Defaults.DISPLAY,
+			specifiedStyle,
+		};
+	}
+
+	private static parseLength(value: string | null): number | undefined {
+		if (!value) return undefined;
+		const parsed = parseFloat(value);
+		return Number.isFinite(parsed) ? parsed : undefined;
+	}
+
+	private static parseDocumentMetadata(svg: Element): SVGDocumentMetadata {
+		const width = this.parseLength(svg.getAttribute("width"));
+		const height = this.parseLength(svg.getAttribute("height"));
+		const viewBoxAttr = svg.getAttribute("viewBox") ?? svg.getAttribute("viewbox");
+		const nums = viewBoxAttr
+			?.trim()
+			.split(/[\s,]+/)
+			.map(Number)
+			.filter((n) => Number.isFinite(n));
+
+		if (nums && nums.length === 4 && nums[2] > 0 && nums[3] > 0) {
+			return {
+				viewBox: {
+					x: nums[0],
+					y: nums[1],
+					width: nums[2],
+					height: nums[3],
+				},
+				width,
+				height,
+			};
+		}
+
+		return {
+			viewBox: {
+				x: 0,
+				y: 0,
+				width: width && width > 0 ? width : Defaults.VIEWBOX_WIDTH,
+				height: height && height > 0 ? height : Defaults.VIEWBOX_HEIGHT,
+			},
+			width,
+			height,
 		};
 	}
 
@@ -167,12 +225,17 @@ export class SVGParser {
 					);
 					return null;
 				}
+				const style = this.parseCommonStyles(el);
 				return {
 					type: ESVGElementType.PATH,
 					d: SVGParser.parsePathDToJSON(d),
 					fillRule:
 						(el.getAttribute("fill-rule") as TFillRule) ?? Defaults.FILL_RULE,
-					...this.parseCommonStyles(el),
+					...style,
+					specifiedStyle: {
+						...style.specifiedStyle,
+						fillRule: el.hasAttribute("fill-rule"),
+					},
 				};
 			}
 
@@ -195,8 +258,8 @@ export class SVGParser {
 			}
 
 			case "ellipse": {
-				const cx = Guard.positiveNumber("cx", this.parseFloatAttr(el, "cx"), el);
-				const cy = Guard.positiveNumber("cy", this.parseFloatAttr(el, "cy"), el);
+				const cx = Guard.number("cx", this.parseFloatAttr(el, "cx"), el);
+				const cy = Guard.number("cy", this.parseFloatAttr(el, "cy"), el);
 				const rx = Guard.positiveNumber("rx", this.parseFloatAttr(el, "rx"), el);
 				const ry = Guard.positiveNumber("ry", this.parseFloatAttr(el, "ry"), el);
 				if (
@@ -218,8 +281,8 @@ export class SVGParser {
 			}
 
 			case "rect": {
-				const x = Guard.positiveNumber("x", this.parseFloatAttr(el, "x"), el);
-				const y = Guard.positiveNumber("y", this.parseFloatAttr(el, "y"), el);
+				const x = Guard.number("x", this.parseFloatAttr(el, "x"), el);
+				const y = Guard.number("y", this.parseFloatAttr(el, "y"), el);
 				const width = Guard.positiveNumber(
 					"width",
 					this.parseFloatAttr(el, "width"),
@@ -255,12 +318,17 @@ export class SVGParser {
 				const points = this.parsePointsAttr(pointsAttr);
 				const validPoints = Guard.pointArray(points, "points", 3, el);
 				if (!validPoints) return null;
+				const style = this.parseCommonStyles(el);
 				return {
 					type: ESVGElementType.POLYGON,
 					points: validPoints,
 					fillRule:
 						(el.getAttribute("fill-rule") as TFillRule) ?? Defaults.FILL_RULE,
-					...this.parseCommonStyles(el),
+					...style,
+					specifiedStyle: {
+						...style.specifiedStyle,
+						fillRule: el.hasAttribute("fill-rule"),
+					},
 				};
 			}
 
@@ -269,12 +337,17 @@ export class SVGParser {
 				const points = this.parsePointsAttr(pointsAttr);
 				const validPoints = Guard.pointArray(points, "points", 2, el);
 				if (!validPoints) return null;
+				const style = this.parseCommonStyles(el);
 				return {
 					type: ESVGElementType.POLYLINE,
 					points: validPoints,
 					fillRule:
 						(el.getAttribute("fill-rule") as TFillRule) ?? Defaults.FILL_RULE,
-					...this.parseCommonStyles(el),
+					...style,
+					specifiedStyle: {
+						...style.specifiedStyle,
+						fillRule: el.hasAttribute("fill-rule"),
+					},
 				};
 			}
 
@@ -376,9 +449,36 @@ export class SVGParser {
 	 * ```
 	 */
 	public static parse(svgString: string): SVGElmnt[] {
+		return this.parseDocument(svgString).children;
+	}
+
+	/**
+	 * Parses an SVG string and preserves root-level document metadata used by
+	 * the renderer, especially `viewBox`, `width`, and `height`.
+	 */
+	public static parseDocument(svgString: string): ParsedSVGDocument {
 		const parser = new DOMParser();
 		const doc = parser.parseFromString(svgString, "image/svg+xml");
 		const svg = doc.documentElement;
+		const parserError = doc.querySelector("parsererror");
+
+		if (parserError || !svg || svg.tagName.toLowerCase() !== "svg") {
+			Logger.error(
+				parserError?.textContent?.trim() ||
+					"Invalid SVG document. Root element must be <svg>."
+			);
+			return {
+				metadata: {
+					viewBox: {
+						x: 0,
+						y: 0,
+						width: Defaults.VIEWBOX_WIDTH,
+						height: Defaults.VIEWBOX_HEIGHT,
+					},
+				},
+				children: [],
+			};
+		}
 
 		// Parse all top-level children (skip <svg> root itself)
 		const result: SVGElmnt[] = [];
@@ -392,6 +492,9 @@ export class SVGParser {
 				result.push(parsed);
 			}
 		}
-		return result;
+		return {
+			metadata: this.parseDocumentMetadata(svg),
+			children: result,
+		};
 	}
 }

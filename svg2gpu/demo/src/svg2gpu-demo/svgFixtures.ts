@@ -1,71 +1,99 @@
-export const SVG_EXAMPLES = [
-    {
-        name: "Blank",
-        svg: `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <!-- <path d="M10 10 H 14 V 14 H 10 Z" fill="none" stroke="#000" stroke-width="1"/> -->
+export type SvgDemoFixture = {
+  title: string
+  description: string
+  svg: string
+  expected: {
+    minBatches: number
+    minVertices: number
+    minIndices: number
+  }
+}
+
+export const BASIC_GEOMETRY_FIXTURE: SvgDemoFixture = {
+  title: "Basic Geometry",
+  description: "Rect, circle, ellipse, polygon, polyline, and line primitives.",
+  expected: {
+    minBatches: 7,
+    minVertices: 40,
+    minIndices: 36,
+  },
+  svg: `<svg viewBox="0 0 240 160" xmlns="http://www.w3.org/2000/svg">
+  <rect x="16" y="18" width="56" height="42" fill="#2e9dfe" stroke="#dbeafe" stroke-width="3"/>
+  <circle cx="126" cy="42" r="24" fill="#ed7465" stroke="#ffd6cf" stroke-width="3"/>
+  <ellipse cx="194" cy="42" rx="28" ry="17" fill="#7dd3fc" stroke="#075985" stroke-width="2"/>
+  <polygon points="34,96 64,82 92,112 48,142 20,122" fill="#eab308" stroke="#fef08a" stroke-width="2"/>
+  <polyline points="116,130 136,92 158,124 178,86 204,132" fill="none" stroke="#22c55e" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+  <line x1="110" y1="142" x2="220" y2="142" stroke="#f8fafc" stroke-width="3"/>
 </svg>`,
-    },
-    {
-        name: "Simple shapes",
-        svg: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-    <rect x="10" y="10" width="50" height="50" fill="#6bceff" stroke="#3388FF" stroke-width="2"/>
-    <circle cx="100" cy="100" r="30" fill="#f97315" stroke="#d65a00" stroke-width="3"/>
-    <ellipse cx="150" cy="50" rx="20" ry="10" fill="#90ee90" stroke="#32cd32" stroke-width="2"/>
-    <line x1="10" y1="150" x2="190" y2="150" stroke="#ff69b4" stroke-width="4"/>
-    <polygon points="50,150 75,120 100,150 125,120 150,150 125,180 100,150 75,180" fill="#ffcc00" stroke="#ff9900" stroke-width="2"/>
+}
+
+export const PATH_CURVES_FIXTURE: SvgDemoFixture = {
+  title: "Path Curves",
+  description: "Cubic curves, quadratic curves, arcs, fills, and strokes after path normalization.",
+  expected: {
+    minBatches: 4,
+    minVertices: 60,
+    minIndices: 48,
+  },
+  svg: `<svg viewBox="0 0 260 180" xmlns="http://www.w3.org/2000/svg">
+  <path d="M30 126 C58 28 116 28 146 126 S230 226 232 76" fill="none" stroke="#38bdf8" stroke-width="6" stroke-linecap="round"/>
+  <path d="M44 52 Q86 18 128 52 T212 52" fill="none" stroke="#f97316" stroke-width="5" stroke-linecap="round"/>
+  <path d="M56 118 A44 30 0 1 1 144 118 A44 30 0 1 1 56 118 Z" fill="#22c55e" fill-opacity="0.72" stroke="#dcfce7" stroke-width="3"/>
+  <path d="M164 112 L214 88 L234 138 L184 154 Z" fill="#f43f5e" stroke="#ffe4e6" stroke-width="2"/>
 </svg>`,
-    },
-    {
-        name: "Complex paths",
-        svg: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-    <path d="M10 80 C 40 10, 65 10, 95 80 S 150 150, 180 80" fill="none" stroke="#6bceff" stroke-width="3"/>
-    <path d="M20 120 Q 40 100, 60 120 T 100 120" fill="none" stroke="#f97315" stroke-width="3"/>
-    <path d="M50 50 L150 50 L100 150 Z" fill="#90ee90" stroke="#32cd32" stroke-width="2"/>
-</svg>`,
-    },
-    {
-        name: "Text and gradients",
-        svg: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" style="stop-color:#6bceff;stop-opacity:1" />
-            <stop offset="100%" style="stop-color:#f97315;stop-opacity:1" />
-        </linearGradient>
-    </defs>
-    <text x="10" y="40" font-family="Arial" font-size="24" fill="url(#grad1)" stroke="#3388FF" stroke-width="1">Hello SVG</text>
-    <rect x="10" y="60" width="180" height="100" fill="#90ee90" stroke="#32cd32" stroke-width="2"/>
-    <circle cx="100" cy="110" r="30" fill="#ff69b4" stroke="#ff1493" stroke-width="3"/>
-</svg>`,
-    },
-    {
-        name: "Logo example",
-        svg: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-    <path
-        stroke="#007bb0"
-        stroke-width="1.1"
-        d="M 13.1 5.85, l -4.7 3.55 M 13.5 14.5, l -4.7 3.55 M 8.6 10.65, l 4.7 2.8"
-    />
-    <path
-        stroke="#ed7465"
-        stroke-width="0.68"
-        d="M 16.19 7.15, l -3.32 2.56, 3.5 2.1"
-    />
-    <g stroke="#007bb0" stroke-width="0.6">
-        <circle cx="7.85" cy="10.15" r="1"/>
-        <circle cx="13.75" cy="5.35" r="1"/>
-        <circle cx="14.23" cy="13.8" r="1"/>
-        <circle cx="8.05" cy="18.74" r="1"/>
+}
+
+export const TRANSFORM_INHERITANCE_FIXTURE: SvgDemoFixture = {
+  title: "Transforms + Inheritance",
+  description: "Nested groups inherit styles and compose transforms before tessellation.",
+  expected: {
+    minBatches: 6,
+    minVertices: 40,
+    minIndices: 36,
+  },
+  svg: `<svg viewBox="0 0 260 180" xmlns="http://www.w3.org/2000/svg">
+  <g fill="#38bdf8" stroke="#e0f2fe" stroke-width="2.5" opacity="0.78">
+    <rect x="22" y="28" width="56" height="44"/>
+    <g transform="translate(108 50) rotate(24)">
+      <rect x="-26" y="-20" width="52" height="40"/>
+      <line x1="-42" y1="32" x2="42" y2="32"/>
     </g>
-    <g stroke="#ed7465" stroke-width="0.8">
-        <circle cx="16.5" cy="12" r="0.4"/>
-        <circle cx="16.5" cy="6.95" r="0.4"/>
-        <circle cx="12.9" cy="9.6" r="0.4"/>
-    </g>
+  </g>
+  <g transform="translate(178 92) scale(1.18)" fill="#f97316" stroke="#ffedd5" stroke-width="2">
+    <circle cx="0" cy="0" r="28"/>
+    <polygon points="0,-46 12,-12 48,-12 18,8 30,44 0,22 -30,44 -18,8 -48,-12 -12,-12"/>
+  </g>
+  <g transform="translate(36 126)" stroke="#a7f3d0" stroke-width="5" stroke-linecap="round" fill="none">
+    <path d="M0 0 L34 -18 L68 0 L102 -18"/>
+  </g>
 </svg>`,
-    },
-    {
-        name: "Complex Tiger SVG",
-        svg: `<svg xmlns="http://www.w3.org/2000/svg" id="svg2" viewBox="0 0 900 900" version="1.1">
+}
+
+export const HOLES_AND_FILL_RULE_FIXTURE: SvgDemoFixture = {
+  title: "Fill Rules",
+  description: "Even-odd contour grouping via earcut holes, with an outlined reference shape.",
+  expected: {
+    minBatches: 2,
+    minVertices: 12,
+    minIndices: 12,
+  },
+  svg: `<svg viewBox="0 0 220 160" xmlns="http://www.w3.org/2000/svg">
+  <path fill="#facc15" fill-rule="evenodd" stroke="#fef9c3" stroke-width="3"
+    d="M22 22 H134 V134 H22 Z M54 54 H102 V102 H54 Z"/>
+  <path fill="#60a5fa" stroke="#dbeafe" stroke-width="3"
+    d="M152 32 L202 80 L152 128 L122 80 Z"/>
+</svg>`,
+}
+
+export const COMPLEX_TIGER: SvgDemoFixture = {
+  title: "TIGER",
+  description: "A huge and complex SVG of a tiger's head, stress-testing tessellation and batching optimizations.",
+  expected: {
+    minBatches: 2,
+    minVertices: 12,
+    minIndices: 12,
+  },
+  svg: `<svg xmlns="http://www.w3.org/2000/svg" id="svg2" viewBox="0 0 900 900" version="1.1">
  <g id="g4" fill="none" transform="matrix(1.7656463,0,0,1.7656463,324.90716,255.00942)">
   <g id="g6" stroke-width="0.17200001" stroke="#000" fill="#FFF">
    <path id="path8" d="m-122.3,84.285s0.1,1.894-0.73,1.875c-0.82-0.019-17.27-48.094-37.8-45.851,0,0,17.78-7.353,38.53,43.976z"/>
@@ -788,6 +816,13 @@ export const SVG_EXAMPLES = [
    <path id="path964" d="m20.5,344.5s1.5-11-10,2"/>
   </g>
  </g>
-</svg>`,
-    },
-];
+</svg>`
+}
+
+export const ALL_SVG_FIXTURES = [
+  BASIC_GEOMETRY_FIXTURE,
+  PATH_CURVES_FIXTURE,
+  TRANSFORM_INHERITANCE_FIXTURE,
+  HOLES_AND_FILL_RULE_FIXTURE,
+  COMPLEX_TIGER
+]

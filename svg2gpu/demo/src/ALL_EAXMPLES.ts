@@ -8,37 +8,49 @@ export type TExample = {
 
 export const ALL_EXAMPLES: TExample[] = [
     {
-        categoryName: "LINE",
+        categoryName: "SVG2GPU",
         examples: [
             {
-                name: "LINE - Simple",
-                path: "line-simple"
+                name: "Basic Geometry",
+                path: "svg-basic-geometry"
             },
             {
-                name: "LINE - Stroke Thickness",
-                path: "line-stroke-thickness"
-            }
+                name: "Path Curves",
+                path: "svg-path-curves"
+            },
+            {
+                name: "Transforms + Inheritance",
+                path: "svg-transform-inheritance"
+            },
+            {
+                name: "Fill Rules",
+                path: "svg-fill-rules"
+            },
+            {
+                name: "Runtime Compile Tests",
+                path: "svg-runtime-tests"
+            },
+            {
+                name: "Complex Tiger",
+                path: "complex-tiger"
+            },
         ]
     },
-    {
-        name: "BAR  - Simple",
-        path: "bar-simple"
-    },
-    {
-        name: "BAR - Stroke Thickness",
-        path: "bar-stroke-thickness"
-    }
 ]
 
 import type { ComponentType } from "react"
-import BarSimplePreview from "./examples/bar-simple/Preview"
-import BarStrokeThicknessPreview from "./examples/bar-stroke-thickness/Preview"
-import LineSimplePreview from "./examples/line-simple/Preview"
-import LineStrokeThicknessPreview from "./examples/line-stroke-thickness/Preview"
+import SvgBasicGeometryPreview from "./examples/svg-basic-geometry/Preview"
+import SvgFillRulesPreview from "./examples/svg-fill-rules/Preview"
+import SvgPathCurvesPreview from "./examples/svg-path-curves/Preview"
+import SvgRuntimeTestsPreview from "./examples/svg-runtime-tests/Preview"
+import SvgTransformInheritancePreview from "./examples/svg-transform-inheritance/Preview"
+import ComplexTigerPreview from "./examples/svg-tiger/Preview"
 
 export const EXAMPLE_COMPONENTS: Record<string, ComponentType> = {
-    "line-simple": LineSimplePreview,
-    "line-stroke-thickness": LineStrokeThicknessPreview,
-    "bar-simple": BarSimplePreview,
-    "bar-stroke-thickness": BarStrokeThicknessPreview,
+    "svg-basic-geometry": SvgBasicGeometryPreview,
+    "svg-path-curves": SvgPathCurvesPreview,
+    "svg-transform-inheritance": SvgTransformInheritancePreview,
+    "svg-fill-rules": SvgFillRulesPreview,
+    "svg-runtime-tests": SvgRuntimeTestsPreview,
+    "complex-tiger": ComplexTigerPreview,
 }

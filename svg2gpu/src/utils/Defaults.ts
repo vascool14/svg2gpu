@@ -8,6 +8,10 @@ import {
 } from "../types";
 
 export class Defaults {
+	/** Fallback viewport width when the root SVG has no width/viewBox. */
+	static VIEWBOX_WIDTH: number = 300;
+	/** Fallback viewport height when the root SVG has no height/viewBox. */
+	static VIEWBOX_HEIGHT: number = 150;
 	/** Default value for the stroke-width attribute in SVG elements */
 	static STROKE_WIDTH: number = 1;
 	/** rgba(0, 0, 0, 0) - Black with full transparency */
@@ -26,8 +30,8 @@ export class Defaults {
 	static VISIBILITY: TVisibility = "visible";
 	/** Default display */
 	static DISPLAY: TDisplay = "inline";
-	/** 50% fill opacity - From 0.0 to 1.0 */
-	static FILL_OPACITY: number = 0.5;
+	/** Full fill opacity - From 0.0 to 1.0 */
+	static FILL_OPACITY: number = 1;
 	/** Full stroke opacity - From 0.0 to 1.0 */
 	static STROKE_OPACITY: number = 1;
 	/** Default fill rule */

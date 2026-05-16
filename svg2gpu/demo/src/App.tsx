@@ -31,7 +31,7 @@ function collectCategoryIds(nodes: TExample[], pathPrefix = "root"): string[] {
 
 export default function App() {
   const leafExamples = useMemo(() => collectLeafExamples(ALL_EXAMPLES), [])
-  const [activePath, setActivePath] = useState<string>(leafExamples[0]?.path ?? "")
+  const [activePath, setActivePath] = useState<string>("svg-basic-geometry")
   const [expandedMenus, setExpandedMenus] = useState<Set<string>>(
     () => new Set(collectCategoryIds(ALL_EXAMPLES)),
   )
@@ -125,13 +125,18 @@ export default function App() {
         </aside>
 
         <section className="flex min-h-[22rem] flex-col rounded-xl bg-white/5 p-4 sm:p-5">
-          <header className="mb-4">
-            {/* <h1 className="m-0 text-xl font-semibold text-[var(--text)] sm:text-2xl">
-              {activeExample?.name ?? "Preview"}
-            </h1>
-            <p className="mt-1 text-sm text-[var(--text-thin)]">
-              {activeExample?.path ?? "Select an example from the sidebar."}
-            </p> */}
+          <header className="mb-4 flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <h1 className="m-0 text-xl font-semibold text-[var(--text)] sm:text-2xl">
+                {activeExample?.name ?? "Preview"}
+              </h1>
+              <p className="mt-1 text-sm text-[var(--text-thin)]">
+                {activeExample?.path ?? "Select an example from the sidebar."}
+              </p>
+            </div>
+            <span className="rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs uppercase tracking-[0.1em] text-white/50">
+              Svg2GPU Demo Lab
+            </span>
           </header>
 
           <div className="flex min-h-[18rem] flex-1 items-stretch rounded-lg bg-black/25 p-3 sm:p-4">

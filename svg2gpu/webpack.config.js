@@ -23,7 +23,7 @@ const umdConfig = {
 		path: path.resolve(__dirname, "lib"),
 		library: { name: "svg2gpu", type: "umd" },
 		globalObject: "this",
-		clean: true,
+		clean: false,
 	},
 	plugins: [
 		new NpmDtsPlugin({
@@ -46,6 +46,6 @@ const esmConfig = {
 };
 
 module.exports = [
-	// umdConfig, 
+	umdConfig,
 	esmConfig
 ];

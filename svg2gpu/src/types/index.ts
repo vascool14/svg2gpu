@@ -11,6 +11,17 @@
 export type Point = [number, number];
 
 /**
+ * SVG/Web 2D affine transform matrix in the same layout used by Canvas:
+ * `[a, b, c, d, e, f]`, representing:
+ *
+ * ```text
+ * x' = a*x + c*y + e
+ * y' = b*x + d*y + f
+ * ```
+ */
+export type Matrix2D = [number, number, number, number, number, number];
+
+/**
  * Represents a color as an array.
  *
  * @note The array is in the format `[R, G, B, A]`, where:
@@ -51,6 +62,11 @@ export type SVGStyleProps = {
 	transform?: string;
 	visibility?: TVisibility;
 	display?: TDisplay;
+	/**
+	 * Internal metadata used by the scene resolver to distinguish inherited
+	 * styles from parser defaults while preserving the older parsed shape API.
+	 */
+	specifiedStyle?: Partial<Record<keyof SVGStyleProps | "fillRule", boolean>>;
 };
 
 /**
@@ -305,7 +321,102 @@ export type SVGElmnt =
 	| SVGText
 	| SVGGroup;
 
-// 3. WebGL related types
+// 3. Document, scene, geometry, and renderer contracts
+
+export type SVGViewBox = {
+	x: number;
+	y: number;
+	width: number;
+	height: number;
+};
+
+export type SVGDocumentMetadata = {
+	viewBox: SVGViewBox;
+	width?: number;
+	height?: number;
+};
+
+export type ParsedSVGDocument = {
+	metadata: SVGDocumentMetadata;
+	children: SVGElmnt[];
+};
+
+export type Svg2GPUDiagnosticLevel = "info" | "warning" | "error";
+
+export type Svg2GPUDiagnostic = {
+	level: Svg2GPUDiagnosticLevel;
+	message: string;
+	element?: string;
+};
+
+export type ResolvedRenderStyle = {
+	fill?: Color;
+	fillOpacity: number;
+	fillRule: TFillRule;
+	stroke?: Color;
+	strokeWidth: number;
+	strokeOpacity: number;
+	strokeLinecap: TStrokeLineCap;
+	strokeLinejoin: TStrokeLineJoin;
+	opacity: number;
+	display: TDisplay;
+	visibility: TVisibility;
+};
+
+export type ResolvedSVGElement = {
+	type: ESVGElementType;
+	source: SVGElmnt;
+	style: ResolvedRenderStyle;
+	transform: Matrix2D;
+	children?: ResolvedSVGElement[];
+};
+
+export type ResolvedScene = {
+	metadata: SVGDocumentMetadata;
+	children: ResolvedSVGElement[];
+	diagnostics: Svg2GPUDiagnostic[];
+};
+
+export type GeometryPrimitiveKind = "fill" | "stroke";
+
+export type GeometryBatch = {
+	kind: GeometryPrimitiveKind;
+	vertices: Float32Array;
+	indices: Uint32Array;
+	color: Color;
+	sourceType: ESVGElementType;
+};
+
+export type GpuSceneStats = {
+	batches: number;
+	vertices: number;
+	indices: number;
+};
+
+export type GpuScene = {
+	metadata: SVGDocumentMetadata;
+	batches: GeometryBatch[];
+	diagnostics: Svg2GPUDiagnostic[];
+	stats: GpuSceneStats;
+};
+
+export type Svg2GPUFitMode = "contain" | "cover" | "stretch" | "none";
+
+export type Svg2GPUOptions = {
+	svg: string;
+	antialias?: boolean;
+	background?: Color;
+	fit?: Svg2GPUFitMode;
+	dpr?: number;
+	flattenTolerance?: number;
+	canvas?: HTMLCanvasElement;
+};
+
+export type Svg2GPUCompileOptions = {
+	flattenTolerance?: number;
+};
+
+// 4. Legacy WebGL related types
 
 /**
  * Mesh output for WebGL rendering.

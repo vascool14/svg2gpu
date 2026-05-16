@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Editor from "@monaco-editor/react";
-import { SVGParser, WebGLPathRenderer } from "../../../../svg2gpu/src";
-import type { RenderStyle } from "../../../../svg2gpu/src/core/WebGLPathRenderer";
+import { SVGParser, WebGPURenderer } from "../../../../svg2gpu/src";
 import { SVG_EXAMPLES } from "./constants";
 
 const INITIAL_SVG = SVG_EXAMPLES[5]?.svg
 
-const FALLBACK_STYLE: RenderStyle = {
+const FALLBACK_STYLE = {
     fill: [1, 0, 0, 0],
     fillOpacity: 0.8,
     stroke: [0, 0, 0, 1],
@@ -177,7 +176,7 @@ export default function Playground() {
         const canvasViewport = canvasViewportRef.current;
         if (!canvas || !canvasViewport) return;
 
-        const renderer = new WebGLPathRenderer(canvas, extractViewBox(renderedSvg));
+        const renderer = new WebGPURenderer(canvas, extractViewBox(renderedSvg));
         let hasLoggedRenderForThisSvg = false;
 
         const draw = () => {
