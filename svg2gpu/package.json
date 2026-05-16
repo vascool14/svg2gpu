@@ -24,7 +24,8 @@
 		"build:esm": "webpack --config webpack.config.mjs.js",
 		"build": "npm run clean && npm run generate-index && webpack --mode production",
 		"clean": "rm -rf lib && rm -rf dist",
-		"test": "npx jest --verbose",
+		"test": "npx jest",
+		"test:f1": "npx jest --runInBand tests/f1/f1-functionality.test.ts",
 		"publish-npm": "npm run build && npm publish",
 		"visual-test": "TODO",
 		"format": "prettier --write \"**/*.{ts,js,json}\"",
@@ -42,11 +43,11 @@
 		"ts-jest": "^29.4.0",
 		"ts-loader": "^9.5.1",
 		"ts-node": "^10.9.2",
+		"typedoc": "^0.28.17",
 		"typescript": "^5.8.3",
 		"webpack": "^5.91.0",
 		"webpack-cli": "^5.1.4",
 		"webpack-dev-server": "^4.15.1",
-		"xmldom": "^0.6.0",
-		"typedoc": "^0.28.17"
+		"xmldom": "^0.6.0"
 	}
 }

@@ -211,7 +211,7 @@ export default function HeroSection() {
             </div>
 
             <div className="absolute z-1 flex h-screen w-full flex-col px-6 text-center items-center justify-center">
-                    <h1 className="sr-only">svg2GPU</h1>
+                <h1 className="sr-only">svg2GPU</h1>
                 <h1 className="hugeTitle" style={{ marginTop: "-10rem" }}>
                     {/* <span className="font-thin text-(--text)!">svg2</span>GPU */}
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="-16 4 96 16" height={'calc(4rem + 3vw)'}>
@@ -233,10 +233,10 @@ export default function HeroSection() {
                         </g>
                     </svg>
                 </h1>
-                <p className="text-[calc(1rem+1vw)]! font-thin! text-(--text)!">
+                <h2 className="font-thin!">
                     draw svg primitives on the GPU at{" "}
                     <span className="underline text-(--primary)!">lightning speeds</span>
-                </p>
+                </h2>
                 <div className="flex gap-8 mt-10 items-center justify-center">
                     <Link to="/playground" style={{ textDecoration: "none" }}>
                         <Button>Try it out</Button>
@@ -248,10 +248,11 @@ export default function HeroSection() {
                                 color: "#FFFFFF",
                                 display: "flex",
                                 padding: "0.5rem 1.5rem",
+                                cursor: "pointer"
                             }}
                         >
                             <span>Read the docs</span>
-                            <div className="h-5 mt-0.5 ml-2">
+                            <div className="h-5 mt-1.25 ml-2">
                                 <ChevronRight />
                             </div>
                         </Button>

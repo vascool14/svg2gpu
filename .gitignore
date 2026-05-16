@@ -1,6 +1,8 @@
 /lib
 /dist
 /ignored
+/latex_docs
+/utils/shaders
 
 # Output
 .output

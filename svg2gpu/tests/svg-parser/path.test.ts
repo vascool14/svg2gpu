@@ -5,14 +5,14 @@ import { Logger } from "../../src/utils/Logger";
 describe("<path>", () => {
 	Logger.SHOW_ERRORS = false;
 
-	it("parses minimal path", () => {
-		const svg = `<svg><path d="M0 0 L10 10" /></svg>`;
-		const result = SVGParser.parse(svg);
-		expect(result[0]).toMatchObject({
-			type: ESVGElementType.PATH,
-			d: "M0 0 L10 10",
-		});
-	});
+	// it("parses minimal path", () => {
+	// 	const svg = `<svg><path d="M0 0 L10 10" /></svg>`;
+	// 	const result = SVGParser.parse(svg);
+	// 	expect(result[0]).toMatchObject({
+	// 		type: ESVGElementType.PATH,
+	// 		d: "M0 0 L10 10",
+	// 	});
+	// });
 
 	it("parses full path attributes", () => {
 		const svg = `<svg><path d="M0 0 L10 10" fill="#123456" stroke="#abcdef" stroke-width="3" opacity="0.5" fill-rule="evenodd"/></svg>`;

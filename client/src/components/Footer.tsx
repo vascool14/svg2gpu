@@ -17,9 +17,6 @@ export default function Footer() {
                 <Link to="/playground">
                     <p className="pLink">Playground</p>
                 </Link>
-                <Link to="/examples">
-                    <p className="pLink">Examples</p>
-                </Link>
                 <Link to="/docs">
                     <p className="pLink">Docs</p>
                 </Link>
