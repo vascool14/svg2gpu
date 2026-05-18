@@ -1,5 +1,8 @@
-import { Svg2GPU, type GpuScene } from "svg2gpu"
+import { Logger, Svg2GPU, type GpuScene } from "svg2gpu"
 import type { SvgDemoFixture } from "./svgFixtures"
+
+Logger.SHOW_DEBUG = false
+Logger.SHOW_INFO = false
 
 export type DemoCheck = {
   label: string
@@ -7,8 +10,23 @@ export type DemoCheck = {
   detail: string
 }
 
+export type MeasuredCompileResult = {
+  scene: GpuScene
+  durationMs: number
+}
+
 export function compileFixture(fixture: SvgDemoFixture): GpuScene {
   return Svg2GPU.compile(fixture.svg, { flattenTolerance: 0.35 })
+}
+
+export function measureCompileFixture(fixture: SvgDemoFixture): MeasuredCompileResult {
+  const start = performance.now()
+  const scene = compileFixture(fixture)
+
+  return {
+    scene,
+    durationMs: performance.now() - start,
+  }
 }
 
 export function runCompileChecks(fixture: SvgDemoFixture, scene: GpuScene): DemoCheck[] {

@@ -27,6 +27,35 @@ describe("<path>", () => {
 		});
 	});
 
+	it("parses inline style declarations", () => {
+		const svg = `<svg><path d="M0 0 L10 10" style="fill:#ffffff;stroke:none;stroke-width:3;opacity:0.5;fill-rule:evenodd"/></svg>`;
+		const result = SVGParser.parse(svg);
+		expect(result[0]).toMatchObject({
+			type: ESVGElementType.PATH,
+			fill: [1, 1, 1, 1],
+			stroke: undefined,
+			strokeWidth: 3,
+			opacity: 0.5,
+			fillRule: "evenodd",
+			specifiedStyle: expect.objectContaining({
+				fill: true,
+				stroke: true,
+				strokeWidth: true,
+				opacity: true,
+				fillRule: true,
+			}),
+		});
+	});
+
+	it("lets inline style override presentation attributes", () => {
+		const svg = `<svg><path d="M0 0 L10 10" fill="#000000" stroke="#abcdef" style="fill:#ffffff;stroke:none"/></svg>`;
+		const result = SVGParser.parse(svg);
+		expect(result[0]).toMatchObject({
+			fill: [1, 1, 1, 1],
+			stroke: undefined,
+		});
+	});
+
 	it("fails on missing 'd'", () => {
 		const svg = `<svg><path stroke="#000"/></svg>`;
 		const result = SVGParser.parse(svg);

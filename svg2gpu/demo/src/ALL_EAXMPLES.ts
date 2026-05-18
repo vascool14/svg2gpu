@@ -34,6 +34,10 @@ export const ALL_EXAMPLES: TExample[] = [
                 name: "Complex Tiger",
                 path: "complex-tiger"
             },
+            {
+                name: "NYC Map Stress",
+                path: "nyc-map-preview"
+            },
         ]
     },
 ]
@@ -45,6 +49,7 @@ import SvgPathCurvesPreview from "./examples/svg-path-curves/Preview"
 import SvgRuntimeTestsPreview from "./examples/svg-runtime-tests/Preview"
 import SvgTransformInheritancePreview from "./examples/svg-transform-inheritance/Preview"
 import ComplexTigerPreview from "./examples/svg-tiger/Preview"
+import NYCMapPreview from "./examples/svg-map-preview/Preview"
 
 export const EXAMPLE_COMPONENTS: Record<string, ComponentType> = {
     "svg-basic-geometry": SvgBasicGeometryPreview,
@@ -53,4 +58,5 @@ export const EXAMPLE_COMPONENTS: Record<string, ComponentType> = {
     "svg-fill-rules": SvgFillRulesPreview,
     "svg-runtime-tests": SvgRuntimeTestsPreview,
     "complex-tiger": ComplexTigerPreview,
+    "nyc-map-preview": NYCMapPreview
 }

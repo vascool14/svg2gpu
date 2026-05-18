@@ -24,10 +24,22 @@ describe("Svg2GPU.compile", () => {
 			</svg>
 		`);
 
-		expect(scene.batches).toHaveLength(2);
+		expect(scene.batches).toHaveLength(1);
 		expect(scene.batches[0].kind).toBe("fill");
 		expect(scene.batches[0].color[3]).toBeCloseTo(0.5);
 		expect(Array.from(scene.batches[0].vertices.slice(0, 2))).toEqual([5, 5]);
+	});
+
+	it("does not emit implicit white strokes for filled shapes", () => {
+		const scene = Svg2GPU.compile(`
+			<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+				<rect x="0" y="0" width="10" height="10" fill="red" />
+				<circle cx="15" cy="15" r="4" fill="blue" stroke="none" />
+			</svg>
+		`);
+
+		expect(scene.batches).toHaveLength(2);
+		expect(scene.batches.every((batch) => batch.kind === "fill")).toBe(true);
 	});
 
 	it("resolves inherited group styles before building geometry", () => {

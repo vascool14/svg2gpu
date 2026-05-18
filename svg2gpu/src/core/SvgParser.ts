@@ -1,6 +1,7 @@
 import { ESVGElementType, EPathDType } from "../types/index";
 import {
 	Point,
+	Color,
 	ParsedSVGDocument,
 	SVGDocumentMetadata,
 	SVGElmnt,
@@ -62,49 +63,119 @@ export class SVGParser {
 		return points;
 	}
 
+	private static parsePaint(
+		value: string | null,
+		fallback: Color | undefined
+	): Color | undefined {
+		if (value === null || value === undefined || value === "") return fallback;
+		if (value.trim().toLowerCase() === "none") return undefined;
+		return ColorParser.parse(value) ?? fallback;
+	}
+
+	private static parseStyleAttr(el: Element): Record<string, string> {
+		const style = el.getAttribute("style");
+		if (!style) return {};
+
+		return style
+			.split(";")
+			.map((declaration) => declaration.trim())
+			.filter(Boolean)
+			.reduce<Record<string, string>>((styles, declaration) => {
+				const separator = declaration.indexOf(":");
+				if (separator <= 0) return styles;
+
+				const property = declaration.slice(0, separator).trim().toLowerCase();
+				const value = declaration.slice(separator + 1).trim();
+				if (property && value) styles[property] = value;
+
+				return styles;
+			}, {});
+	}
+
+	private static getPresentationValue(
+		el: Element,
+		styles: Record<string, string>,
+		name: string
+	): string | null {
+		return styles[name] ?? el.getAttribute(name);
+	}
+
+	private static hasPresentationValue(
+		el: Element,
+		styles: Record<string, string>,
+		name: string
+	): boolean {
+		return styles[name] !== undefined || el.hasAttribute(name);
+	}
+
+	private static parseFloatPresentation(
+		el: Element,
+		styles: Record<string, string>,
+		name: string,
+		fallback?: number
+	): number | undefined {
+		const value = this.getPresentationValue(el, styles, name);
+		if (value === null || value === undefined || value === "") return fallback;
+		const parsed = parseFloat(value);
+		return isNaN(parsed) ? fallback : parsed;
+	}
+
 	private static parseCommonStyles(el: Element): SVGStyleProps {
+		const styles = this.parseStyleAttr(el);
 		const specifiedStyle: SVGStyleProps["specifiedStyle"] = {
-			fill: el.hasAttribute("fill"),
-			fillOpacity: el.hasAttribute("fill-opacity"),
-			stroke: el.hasAttribute("stroke"),
-			strokeWidth: el.hasAttribute("stroke-width"),
-			strokeOpacity: el.hasAttribute("stroke-opacity"),
-			strokeLinecap: el.hasAttribute("stroke-linecap"),
-			strokeLinejoin: el.hasAttribute("stroke-linejoin"),
-			strokeDasharray: el.hasAttribute("stroke-dasharray"),
-			strokeDashoffset: el.hasAttribute("stroke-dashoffset"),
-			opacity: el.hasAttribute("opacity"),
+			fill: this.hasPresentationValue(el, styles, "fill"),
+			fillOpacity: this.hasPresentationValue(el, styles, "fill-opacity"),
+			stroke: this.hasPresentationValue(el, styles, "stroke"),
+			strokeWidth: this.hasPresentationValue(el, styles, "stroke-width"),
+			strokeOpacity: this.hasPresentationValue(el, styles, "stroke-opacity"),
+			strokeLinecap: this.hasPresentationValue(el, styles, "stroke-linecap"),
+			strokeLinejoin: this.hasPresentationValue(el, styles, "stroke-linejoin"),
+			strokeDasharray: this.hasPresentationValue(el, styles, "stroke-dasharray"),
+			strokeDashoffset: this.hasPresentationValue(el, styles, "stroke-dashoffset"),
+			opacity: this.hasPresentationValue(el, styles, "opacity"),
 			transform: el.hasAttribute("transform"),
-			visibility: el.hasAttribute("visibility"),
-			display: el.hasAttribute("display"),
+			visibility: this.hasPresentationValue(el, styles, "visibility"),
+			display: this.hasPresentationValue(el, styles, "display"),
 		};
 
 		return {
-			fill: ColorParser.parse(el.getAttribute("fill")) ?? Defaults.FILL,
-			fillOpacity: this.parseFloatAttr(el, "fill-opacity") ?? Defaults.FILL_OPACITY,
-			stroke: ColorParser.parse(el.getAttribute("stroke")) ?? Defaults.STROKE,
-			strokeWidth: this.parseFloatAttr(el, "stroke-width") ?? Defaults.STROKE_WIDTH,
+			fill: this.parsePaint(
+				this.getPresentationValue(el, styles, "fill"),
+				Defaults.FILL
+			),
+			fillOpacity:
+				this.parseFloatPresentation(el, styles, "fill-opacity") ??
+				Defaults.FILL_OPACITY,
+			stroke: this.parsePaint(
+				this.getPresentationValue(el, styles, "stroke"),
+				Defaults.STROKE
+			),
+			strokeWidth:
+				this.parseFloatPresentation(el, styles, "stroke-width") ??
+				Defaults.STROKE_WIDTH,
 			strokeOpacity:
-				this.parseFloatAttr(el, "stroke-opacity") ?? Defaults.STROKE_OPACITY,
+				this.parseFloatPresentation(el, styles, "stroke-opacity") ??
+				Defaults.STROKE_OPACITY,
 			strokeLinecap:
-				(el.getAttribute("stroke-linecap") as TStrokeLineCap) ??
+				(this.getPresentationValue(el, styles, "stroke-linecap") as TStrokeLineCap) ??
 				Defaults.STROKE_LINECAP,
 			strokeLinejoin:
-				(el.getAttribute("stroke-linejoin") as TStrokeLineJoin) ??
+				(this.getPresentationValue(el, styles, "stroke-linejoin") as TStrokeLineJoin) ??
 				Defaults.STROKE_LINEJOIN,
 			strokeDasharray:
-				this.parseDashArray(el.getAttribute("stroke-dasharray")) ??
+				this.parseDashArray(this.getPresentationValue(el, styles, "stroke-dasharray")) ??
 				Defaults.STROKE_DASHARRAY,
 			strokeDashoffset:
-				this.parseFloatAttr(el, "stroke-dashoffset") ??
+				this.parseFloatPresentation(el, styles, "stroke-dashoffset") ??
 				Defaults.STROKE_DASHOFFSET,
-			opacity: this.parseFloatAttr(el, "opacity") ?? Defaults.OPACITY,
+			opacity:
+				this.parseFloatPresentation(el, styles, "opacity") ?? Defaults.OPACITY,
 			transform: el.getAttribute("transform") ?? Defaults.TRANSFORM,
 			visibility:
-				(el.getAttribute("visibility") as SVGStyleProps["visibility"]) ??
+				(this.getPresentationValue(el, styles, "visibility") as SVGStyleProps["visibility"]) ??
 				Defaults.VISIBILITY,
 			display:
-				(el.getAttribute("display") as SVGStyleProps["display"]) ??
+				(this.getPresentationValue(el, styles, "display") as SVGStyleProps["display"]) ??
 				Defaults.DISPLAY,
 			specifiedStyle,
 		};
@@ -158,6 +229,19 @@ export class SVGParser {
 		return style;
 	}
 
+	private static parseFillRule(el: Element): {
+		fillRule: TFillRule;
+		specified: boolean;
+	} {
+		const styles = this.parseStyleAttr(el);
+		return {
+			fillRule:
+				(this.getPresentationValue(el, styles, "fill-rule") as TFillRule) ??
+				Defaults.FILL_RULE,
+			specified: this.hasPresentationValue(el, styles, "fill-rule"),
+		};
+	}
+
 	private static parseDashArray(value: string | null): string | number[] | undefined {
 		if (!value) return undefined;
 		if (value.includes(",")) {
@@ -195,7 +279,7 @@ export class SVGParser {
 				.flatMap(s => {
 					// Split on numbers but keep the negative sign with the number
 					const numbers = s.match(/-?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?/g) || [];
-					return numbers.map(n => Number(n));
+					return numbers.map((n: any) => Number(n));
 				});
 
 			if (params.some(isNaN)) {
@@ -226,15 +310,15 @@ export class SVGParser {
 					return null;
 				}
 				const style = this.parseCommonStyles(el);
+				const fillRule = this.parseFillRule(el);
 				return {
 					type: ESVGElementType.PATH,
 					d: SVGParser.parsePathDToJSON(d),
-					fillRule:
-						(el.getAttribute("fill-rule") as TFillRule) ?? Defaults.FILL_RULE,
+					fillRule: fillRule.fillRule,
 					...style,
 					specifiedStyle: {
 						...style.specifiedStyle,
-						fillRule: el.hasAttribute("fill-rule"),
+						fillRule: fillRule.specified,
 					},
 				};
 			}
@@ -319,15 +403,15 @@ export class SVGParser {
 				const validPoints = Guard.pointArray(points, "points", 3, el);
 				if (!validPoints) return null;
 				const style = this.parseCommonStyles(el);
+				const fillRule = this.parseFillRule(el);
 				return {
 					type: ESVGElementType.POLYGON,
 					points: validPoints,
-					fillRule:
-						(el.getAttribute("fill-rule") as TFillRule) ?? Defaults.FILL_RULE,
+					fillRule: fillRule.fillRule,
 					...style,
 					specifiedStyle: {
 						...style.specifiedStyle,
-						fillRule: el.hasAttribute("fill-rule"),
+						fillRule: fillRule.specified,
 					},
 				};
 			}
@@ -338,15 +422,15 @@ export class SVGParser {
 				const validPoints = Guard.pointArray(points, "points", 2, el);
 				if (!validPoints) return null;
 				const style = this.parseCommonStyles(el);
+				const fillRule = this.parseFillRule(el);
 				return {
 					type: ESVGElementType.POLYLINE,
 					points: validPoints,
-					fillRule:
-						(el.getAttribute("fill-rule") as TFillRule) ?? Defaults.FILL_RULE,
+					fillRule: fillRule.fillRule,
 					...style,
 					specifiedStyle: {
 						...style.specifiedStyle,
-						fillRule: el.hasAttribute("fill-rule"),
+						fillRule: fillRule.specified,
 					},
 				};
 			}
@@ -394,6 +478,7 @@ export class SVGParser {
 						"SVG <g> group has no valid children:",
 						SVGParser.elementToString(el)
 					);
+					return null;
 				}
 
 				return {

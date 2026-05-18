@@ -1,7 +1,14 @@
+import NYCMap from "../../manhattan-full.svg?raw"
+
 export type SvgDemoFixture = {
   title: string
   description: string
   svg: string
+  source?: {
+    name: string
+    url: string
+    license: string
+  }
   expected: {
     minBatches: number
     minVertices: number
@@ -819,10 +826,22 @@ export const COMPLEX_TIGER: SvgDemoFixture = {
 </svg>`
 }
 
+export const NYC_MAP: SvgDemoFixture = {
+  title: "NYC Map Stress",
+  description: "A large Lower Manhattan street-map SVG stress fixture for synchronized native SVG and Svg2GPU zoom comparison.",
+  expected: {
+    minBatches: 900,
+    minVertices: 3000,
+    minIndices: 3000,
+  },
+  svg: NYCMap,
+}
+
 export const ALL_SVG_FIXTURES = [
   BASIC_GEOMETRY_FIXTURE,
   PATH_CURVES_FIXTURE,
   TRANSFORM_INHERITANCE_FIXTURE,
   HOLES_AND_FILL_RULE_FIXTURE,
-  COMPLEX_TIGER
+  COMPLEX_TIGER,
+  NYC_MAP,
 ]

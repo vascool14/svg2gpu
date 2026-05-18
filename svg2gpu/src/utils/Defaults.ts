@@ -14,10 +14,10 @@ export class Defaults {
 	static VIEWBOX_HEIGHT: number = 150;
 	/** Default value for the stroke-width attribute in SVG elements */
 	static STROKE_WIDTH: number = 1;
-	/** rgba(0, 0, 0, 0) - Black with full transparency */
-	static FILL: Color = [0, 0, 0, 0];
-	/** rgba(1, 1, 1, 1) - White with full opacity */
-	static STROKE: Color = [1, 1, 1, 1];
+	/** SVG initial fill paint: black. */
+	static FILL: Color = [0, 0, 0, 1];
+	/** SVG initial stroke paint: none. */
+	static STROKE: Color | undefined = undefined;
 	/** Default value for the roundness of corners in SVG elements. */
 	static ROUNDING: number = 0;
 	/** Full opacity - From 0.0 to 1.0 */

@@ -63,7 +63,7 @@ export default function App() {
         <div key={nodeId}>
           <button
             type="button"
-            className="flex w-full items-center justify-between rounded-md px-3 py-2 text-left transition-colors hover:bg-white/10"
+            className="flex w-full items-center justify-between rounded-md px-3 py-2 text-left transition-colors"
             onClick={() => toggleMenu(nodeId)}
             style={{ marginLeft }}
           >
@@ -101,8 +101,8 @@ export default function App() {
         type="button"
         className={`mt-1 w-full rounded-md px-3 py-2 text-left text-[1.02rem] leading-5 transition-colors ${
           isActive
-            ? "bg-white/15 text-white"
-            : "text-white/70 hover:bg-white/10 hover:text-white"
+            ? "text-white"
+            : "text-white/70  hover:text-white"
         }`}
         onClick={() => setActivePath(node.path)}
         style={{ marginLeft }}
@@ -124,8 +124,8 @@ export default function App() {
           </div>
         </aside>
 
-        <section className="flex min-h-[22rem] flex-col rounded-xl bg-white/5 p-4 sm:p-5">
-          <header className="mb-4 flex flex-wrap items-end justify-between gap-3">
+        <section className="flex min-h-[22rem] flex-col rounded-xl p-4 pt-0! sm:p-5">
+          {/* <header className="mb-4 flex flex-wrap items-end justify-between gap-3">
             <div>
               <h1 className="m-0 text-xl font-semibold text-[var(--text)] sm:text-2xl">
                 {activeExample?.name ?? "Preview"}
@@ -134,12 +134,12 @@ export default function App() {
                 {activeExample?.path ?? "Select an example from the sidebar."}
               </p>
             </div>
-            <span className="rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs uppercase tracking-[0.1em] text-white/50">
+            <span className="rounded-md border border-white/10 px-3 py-2 text-xs uppercase tracking-[0.1em] text-white/50">
               Svg2GPU Demo Lab
             </span>
-          </header>
+          </header> */}
 
-          <div className="flex min-h-[18rem] flex-1 items-stretch rounded-lg bg-black/25 p-3 sm:p-4">
+          <div className="flex min-h-[18rem] flex-1 items-stretch rounded-lg p-3 sm:p-4">
             {ActivePreview ? (
               <ActivePreview />
             ) : (

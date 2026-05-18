@@ -124,10 +124,16 @@ declare module 'svg2gpu/core/SvgParser' {
       static parseFloatAttr(el: Element, name: string, fallback?: number): number | undefined;
       /** Helper: Parse points attribute (for polygon/polyline) */
       static parsePointsAttr(attr: string): Point[];
+      private static parsePaint;
+      private static parseStyleAttr;
+      private static getPresentationValue;
+      private static hasPresentationValue;
+      private static parseFloatPresentation;
       private static parseCommonStyles;
       private static parseLength;
       private static parseDocumentMetadata;
       private static parseStrokeOnlyStyle;
+      private static parseFillRule;
       private static parseDashArray;
       static parsePathDToJSON(d: string): PathCommand[];
       /** Parses **1** SVG sub-tag element */
@@ -211,98 +217,6 @@ declare module 'svg2gpu/core/TransformParser' {
   }
 
 }
-declare module 'svg2gpu/core/Triangulator' {
-  import { SVGElmnt } from "svg2gpu/types/index";
-  export class Triangulator {
-      static triangulate(element: SVGElmnt): number[];
-      static generateStroke(element: SVGElmnt): number[];
-  }
-
-}
-declare module 'svg2gpu/core/WebGLPathRenderer' {
-  import { PathCommand, Color } from "svg2gpu/types/index";
-  export interface WebGLShader {
-      program: WebGLProgram;
-      attribs: Record<string, number>;
-      uniforms: Record<string, WebGLUniformLocation | null>;
-  }
-  export interface RenderStyle {
-      fill?: Color;
-      fillOpacity?: number;
-      stroke?: Color;
-      strokeWidth?: number;
-      strokeOpacity?: number;
-  }
-  export interface GeometryBuffer {
-      vertices: Float32Array;
-      buffer: WebGLBuffer;
-      vertexCount: number;
-  }
-  export class WebGLPathRenderer {
-      private gl;
-      private shaders;
-      private viewBox;
-      private aspectRatio;
-      private fillGeometryCache;
-      private strokeGeometryCache;
-      constructor(canvas: HTMLCanvasElement, viewBox?: string);
-      private initGL;
-      private createShaders;
-      private createShaderProgram;
-      private compileShader;
-      clear(): void;
-      renderPath(commands: PathCommand[], style: RenderStyle): void;
-      private processPathCommands;
-      private normalizePoint;
-      private getNormalizationMatrix;
-      private renderFill;
-      private renderStroke;
-      private triangulatePath;
-      private isEar;
-      private pointInTriangle;
-      private generateStrokeVertices;
-      private normalizeVec;
-      private createGeometryBuffer;
-      private drawGeometry;
-      private generateCacheKey;
-      dispose(): void;
-  }
-
-}
-declare module 'svg2gpu/core/WebGLRenderer1' {
-  import { SVGElmnt } from "svg2gpu/types/index";
-  export class WebGLRenderer {
-      private gl;
-      private fillShader;
-      private strokeShader;
-      private mvpMatrix;
-      constructor(canvas: HTMLCanvasElement);
-      /** Set up WebGL context, default shaders, and buffers. */
-      private initGL;
-      private getVertexShaderSource;
-      private getFragmentShaderSource;
-      private createShaderProgram;
-      private createShader;
-      render(elements: SVGElmnt[]): void;
-      private clear;
-      private renderElement;
-      private renderGroup;
-      private drawPath;
-      private pathCommandsToPoints;
-      private triangulatePolygon;
-      private isEar;
-      private pointInTriangle;
-      private generateStrokeGeometry;
-      private renderTriangles;
-      private drawCircle;
-      private drawEllipse;
-      private drawRect;
-      private drawPolygon;
-      private drawPolyline;
-      private drawLine;
-  }
-
-}
 declare module 'svg2gpu/core/WebGPURenderer' {
   import { Color, GpuScene, Svg2GPUFitMode } from "svg2gpu/types/index";
   export type WebGPURendererOptions = {
@@ -360,8 +274,8 @@ declare module 'svg2gpu/index' {
   import { Defaults } from 'svg2gpu/utils/Defaults';
   import { Guard } from 'svg2gpu/utils/Guard';
   import { Logger } from 'svg2gpu/utils/Logger';
-  export { ColorParser, GeometryBuilder, PathNormalizer, StyleResolver, Svg2GPU, SVGParser, Tessellator, TransformParser, Triangulator, WebGLPathRenderer, WebGLRenderer, WebGPURenderer, EPathDType, ESVGElementType, Defaults, Guard, Logger };
-  export type { GeometryBuilderOptions, NormalizedContour, NormalizedPath, PathNormalizerOptions, WebGLShader, RenderStyle, GeometryBuffer, WebGPURendererOptions, Point, Matrix2D, Color, TStrokeLineCap, TStrokeLineJoin, TVisibility, TDisplay, TFillRule, SVGStyleProps, PathCommand, SVGStrokeOnlyStyleProps, SVGPath, SVGCircle, SVGEllipse, SVGRect, SVGPolygon, SVGPolyline, SVGLine, SVGText, SVGGroup, SVGElmnt, SVGViewBox, SVGDocumentMetadata, ParsedSVGDocument, Svg2GPUDiagnosticLevel, Svg2GPUDiagnostic, ResolvedRenderStyle, ResolvedSVGElement, ResolvedScene, GeometryPrimitiveKind, GeometryBatch, GpuSceneStats, GpuScene, Svg2GPUFitMode, Svg2GPUOptions, Svg2GPUCompileOptions, MeshOutput, LineOutput, WebGLOutput };
+  export { ColorParser, GeometryBuilder, PathNormalizer, StyleResolver, Svg2GPU, SVGParser, Tessellator, TransformParser, WebGPURenderer, EPathDType, ESVGElementType, Defaults, Guard, Logger };
+  export type { GeometryBuilderOptions, NormalizedContour, NormalizedPath, PathNormalizerOptions, WebGPURendererOptions, Point, Matrix2D, Color, TStrokeLineCap, TStrokeLineJoin, TVisibility, TDisplay, TFillRule, SVGStyleProps, PathCommand, SVGStrokeOnlyStyleProps, SVGPath, SVGCircle, SVGEllipse, SVGRect, SVGPolygon, SVGPolyline, SVGLine, SVGText, SVGGroup, SVGElmnt, SVGViewBox, SVGDocumentMetadata, ParsedSVGDocument, Svg2GPUDiagnosticLevel, Svg2GPUDiagnostic, ResolvedRenderStyle, ResolvedSVGElement, ResolvedScene, GeometryPrimitiveKind, GeometryBatch, GpuSceneStats, GpuScene, Svg2GPUFitMode, Svg2GPUOptions, Svg2GPUCompileOptions, MeshOutput, LineOutput, WebGLOutput };
 
 }
 declare module 'svg2gpu/types/index' {
@@ -762,10 +676,10 @@ declare module 'svg2gpu/utils/Defaults' {
       static VIEWBOX_HEIGHT: number;
       /** Default value for the stroke-width attribute in SVG elements */
       static STROKE_WIDTH: number;
-      /** rgba(0, 0, 0, 0) - Black with full transparency */
+      /** SVG initial fill paint: black. */
       static FILL: Color;
-      /** rgba(1, 1, 1, 1) - White with full opacity */
-      static STROKE: Color;
+      /** SVG initial stroke paint: none. */
+      static STROKE: Color | undefined;
       /** Default value for the roundness of corners in SVG elements. */
       static ROUNDING: number;
       /** Full opacity - From 0.0 to 1.0 */
